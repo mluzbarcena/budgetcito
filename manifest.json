@@ -1,6 +1,6 @@
 {
-  "name": "Mis Gastos",
-  "short_name": "Gastos",
+  "name": "Budgetcito",
+  "short_name": "Budgetcito",
   "description": "Control de gastos mensual personal",
   "start_url": "./index.html",
   "display": "standalone",

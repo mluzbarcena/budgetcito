@@ -395,7 +395,11 @@ function exportData() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'misGastos-' + new Date().toISOString().slice(0, 10) + '.json';
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const ts = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) +
+    '_' + pad(now.getHours()) + '-' + pad(now.getMinutes()) + '-' + pad(now.getSeconds());
+  a.download = 'budgetcito-' + ts + '.json';
   a.click();
   URL.revokeObjectURL(url);
   showToast('Datos exportados');
