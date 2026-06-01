@@ -194,8 +194,9 @@ function computeTotals(data) {
   const variableTotal = sumActive(data.variable);
   const totalExpenses = fixedTotal + variableTotal;
   const available = (data.salary || 0) - totalExpenses;
-  const savingsPercent = formatPercent(Math.max(0, available), data.salary || 0);
-  const spentPercent = formatPercent(Math.min(totalExpenses, data.salary || 0), data.salary || 0);
+  const salary = data.salary || 0;
+  const savingsPercent = salary ? Math.round((available / salary) * 100) + '%' : '—';
+  const spentPercent = salary ? Math.round((totalExpenses / salary) * 100) + '%' : '—';
   return { fixedTotal, variableTotal, totalExpenses, available, savingsPercent, spentPercent };
 }
 
@@ -288,7 +289,9 @@ function renderAll() {
   const availableEl = document.getElementById('summaryAvailable');
   availableEl.textContent = formatARS(totals.available);
   availableEl.className = 'card-amount ' + (totals.available < 0 ? 'danger' : 'success');
-  document.getElementById('summarySavings').textContent = totals.savingsPercent;
+  const savingsEl = document.getElementById('summarySavings');
+  savingsEl.textContent = totals.savingsPercent;
+  savingsEl.className = 'card-amount ' + (totals.available < 0 ? 'danger' : 'accent');
   document.getElementById('summarySpent').textContent = totals.spentPercent;
 
   document.getElementById('fixedTotal').textContent = formatARS(totals.fixedTotal);
