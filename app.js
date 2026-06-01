@@ -109,7 +109,11 @@ function createMonthData(monthKey, prevMonthKey) {
 
 function getOrCreateMonthData(monthKey) {
   let data = Repository.getMonth(monthKey);
-  if (data) return migrateMonthData(data);
+  if (data) {
+    const migrated = migrateMonthData(data);
+    Repository.saveMonth(monthKey, migrated);
+    return migrated;
+  }
 
   const keys = Repository.getAllMonthKeys();
   const prevKey = keys.find(k => k < monthKey) ?? null;
