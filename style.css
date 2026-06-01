@@ -335,6 +335,30 @@ input:checked + .slider::before { transform: translateX(20px); background: #fff;
 .month-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .month-btn:hover:not(.active) { background: var(--surface3); color: var(--text); }
 
+/* ── Icon / Color Picker ───────────────────────────────── */
+.icon-color-fields {
+  display: flex; gap: 0.75rem; margin-bottom: 1rem; align-items: flex-end;
+}
+.icon-color-fields > div:first-child { flex: 0 0 auto; }
+.color-field-wrap { flex: 1; }
+.icon-field {
+  width: 3.5rem; text-align: center; font-size: 1.3rem;
+  padding: 0.6rem 0.25rem;
+}
+.color-swatches {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 8px;
+}
+.color-swatch {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid transparent; cursor: pointer;
+  transition: transform 0.12s, border-color 0.12s;
+  flex-shrink: 0;
+}
+.color-swatch:hover { transform: scale(1.18); }
+.color-swatch.selected { border-color: #fff; transform: scale(1.18); }
+
 /* ── Toast ─────────────────────────────────────────────── */
 .toast {
   position: fixed;

@@ -40,6 +40,7 @@ const VARIABLE_EXPENSES_DEFAULTS = [
 
 const VARIABLE_COLORS = ['#f87171','#fb923c','#fbbf24','#34d399','#60a5fa','#a78bfa','#f472b6','#c084fc'];
 const FIXED_COLORS = ['#7c6af7','#34d399','#60a5fa','#fbbf24','#f472b6','#a78bfa','#c084fc','#fb923c'];
+const ALL_COLORS = [...new Set([...FIXED_COLORS, ...VARIABLE_COLORS])];
 
 const STORAGE_PREFIX = 'mg_';
 const SETTINGS_KEY = STORAGE_PREFIX + 'settings';
@@ -351,6 +352,28 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+// ── Icon / Color Picker ───────────────────────────────────────────────────────
+
+function renderColorSwatches(selectedColor) {
+  const container = document.getElementById('colorSwatches');
+  container.dataset.selected = selectedColor || ALL_COLORS[0];
+  container.innerHTML = '';
+  ALL_COLORS.forEach(color => {
+    const btn = document.createElement('button');
+    btn.className = 'color-swatch' + (color === container.dataset.selected ? ' selected' : '');
+    btn.style.background = color;
+    btn.dataset.color = color;
+    btn.type = 'button';
+    btn.addEventListener('click', () => {
+      container.dataset.selected = color;
+      container.querySelectorAll('.color-swatch').forEach(s =>
+        s.classList.toggle('selected', s.dataset.color === color)
+      );
+    });
+    container.appendChild(btn);
+  });
+}
+
 // ── Settings ──────────────────────────────────────────────────────────────────
 
 function openSettingsModal() {
@@ -409,12 +432,16 @@ function openExpenseModal(item, type) {
 
   document.getElementById('deleteExpenseBtn').classList.remove('hidden');
 
+  document.getElementById('expenseIconInput').value = item.icon || '';
+  renderColorSwatches(item.color);
+
   showModal('expenseModal');
 }
 
 function openAddExpenseModal(type) {
   _editingExpense = null;
   _editingType = type;
+  resetDeleteBtn();
 
   document.getElementById('expenseModalTitle').textContent =
     type === 'fixed' ? 'Nuevo gasto fijo' : 'Nuevo gasto variable';
@@ -428,29 +455,33 @@ function openAddExpenseModal(type) {
 
   document.getElementById('deleteExpenseBtn').classList.add('hidden');
 
+  const palette = type === 'fixed' ? FIXED_COLORS : VARIABLE_COLORS;
+  const list = type === 'fixed' ? State.monthData.fixed : State.monthData.variable;
+  document.getElementById('expenseIconInput').value = type === 'fixed' ? '📌' : '📝';
+  renderColorSwatches(palette[list.length % palette.length]);
+
   showModal('expenseModal');
 }
 
 function saveExpense() {
   const amount = parseFloat(document.getElementById('expenseAmountInput').value) || 0;
   const active = document.getElementById('expenseActiveToggle').checked;
+  const icon = document.getElementById('expenseIconInput').value.trim() ||
+    (_editingType === 'fixed' ? '📌' : '📝');
+  const color = document.getElementById('colorSwatches').dataset.selected || ALL_COLORS[0];
 
   if (_editingExpense) {
     _editingExpense.amount = amount;
     _editingExpense.active = active;
+    _editingExpense.icon = icon;
+    _editingExpense.color = color;
   } else {
     const name = document.getElementById('expenseNameInput').value.trim();
     if (!name) return;
-
     const list = _editingType === 'fixed' ? State.monthData.fixed : State.monthData.variable;
-    const palette = _editingType === 'fixed' ? FIXED_COLORS : VARIABLE_COLORS;
-    const icon = _editingType === 'fixed' ? '📌' : '📝';
-
     list.push({
       id: _editingType + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-      name, icon,
-      color: palette[list.length % palette.length],
-      amount, active,
+      name, icon, color, amount, active,
     });
   }
 
