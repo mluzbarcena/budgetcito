@@ -366,6 +366,7 @@ function saveSalary() {
   State.monthData.salary = val;
   persistAndRender();
   closeModal('salaryModal');
+  showToast('Sueldo guardado');
 }
 
 function toggleSalaryVisibility() {
@@ -439,6 +440,7 @@ function saveExpense() {
 
   persistAndRender();
   closeModal('expenseModal');
+  showToast('Guardado');
 }
 
 function deleteExpense() {
@@ -509,6 +511,20 @@ function persistAndRender() {
 
 function showModal(id) { document.getElementById(id).classList.remove('hidden'); }
 function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+function showToast(message) {
+  const prev = document.querySelector('.toast');
+  if (prev) prev.remove();
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('show')));
+  setTimeout(() => {
+    toast.classList.remove('show');
+    toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+  }, 2000);
+}
 
 // ── Event Wiring ──────────────────────────────────────────────────────────────
 

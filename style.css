@@ -320,6 +320,26 @@ input:checked + .slider::before { transform: translateX(20px); background: #fff;
 .month-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .month-btn:hover:not(.active) { background: var(--surface3); color: var(--text); }
 
+/* ── Toast ─────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: calc(5.5rem + var(--safe-bottom));
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 200;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
 /* Helpers */
 .hidden { display: none !important; }
 .section-mt { margin-top: 1.5rem; }
