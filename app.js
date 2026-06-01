@@ -381,6 +381,54 @@ function openSettingsModal() {
   showModal('settingsModal');
 }
 
+function exportData() {
+  const payload = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    settings: Repository.getSettings(),
+    months: {},
+  };
+  Repository.getAllMonthKeys().forEach(key => {
+    payload.months[key] = Repository.getMonth(key);
+  });
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'misGastos-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Datos exportados');
+}
+
+function importData(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const payload = JSON.parse(e.target.result);
+      if (!payload.months || typeof payload.months !== 'object') throw new Error();
+
+      if (!confirm('¿Reemplazar todos los datos actuales con los del archivo importado?')) return;
+
+      Object.entries(payload.months).forEach(([key, month]) => {
+        Repository.saveMonth(key, month);
+      });
+      if (payload.settings) {
+        Repository.saveSettings(payload.settings);
+        State.settings = payload.settings;
+      }
+
+      State.monthData = getOrCreateMonthData(State.monthKey);
+      renderAll();
+      closeModal('settingsModal');
+      showToast('Datos importados correctamente');
+    } catch {
+      alert('El archivo no es válido o está corrupto.');
+    }
+  };
+  reader.readAsText(file);
+}
+
 // ── Salary ────────────────────────────────────────────────────────────────────
 
 function openSalaryModal() {
@@ -581,6 +629,12 @@ function wireEvents() {
     State.settings.salaryHidden = e.target.checked;
     Repository.saveSettings(State.settings);
     renderSalary(State.monthData.salary || 0);
+  });
+  document.getElementById('exportBtn').addEventListener('click', exportData);
+  document.getElementById('importInput').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) importData(file);
+    e.target.value = '';
   });
 
   document.getElementById('editSalaryBtn').addEventListener('click', openSalaryModal);

@@ -294,6 +294,22 @@ canvas { display: block; width: 100% !important; height: 220px !important; }
   background: var(--danger); color: #fff; border-color: var(--danger);
 }
 
+/* Settings data section */
+.settings-section { margin-top: 1rem; }
+.settings-section-label {
+  display: block; font-size: 0.72rem; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem;
+}
+.settings-actions { display: flex; gap: 0.5rem; }
+.secondary-btn {
+  flex: 1; padding: 0.75rem;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text2);
+  font-family: var(--font); font-size: 0.875rem; cursor: pointer;
+  transition: all 0.15s; text-align: center; display: block;
+}
+.secondary-btn:hover { background: var(--surface3); color: var(--text); border-color: var(--accent); }
+
 /* Toggle switch */
 .toggle-row {
   display: flex; align-items: center; justify-content: space-between;
