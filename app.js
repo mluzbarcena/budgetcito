@@ -330,6 +330,13 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+// ── Settings ──────────────────────────────────────────────────────────────────
+
+function openSettingsModal() {
+  document.getElementById('settingsSalaryHidden').checked = State.settings.salaryHidden;
+  showModal('settingsModal');
+}
+
 // ── Salary ────────────────────────────────────────────────────────────────────
 
 function openSalaryModal() {
@@ -490,6 +497,14 @@ function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 // ── Event Wiring ──────────────────────────────────────────────────────────────
 
 function wireEvents() {
+  document.getElementById('openSettings').addEventListener('click', openSettingsModal);
+  document.getElementById('closeSettingsModal').addEventListener('click', () => closeModal('settingsModal'));
+  document.getElementById('settingsSalaryHidden').addEventListener('change', e => {
+    State.settings.salaryHidden = e.target.checked;
+    Repository.saveSettings(State.settings);
+    renderSalary(State.monthData.salary || 0);
+  });
+
   document.getElementById('editSalaryBtn').addEventListener('click', openSalaryModal);
   document.getElementById('toggleSalaryBtn').addEventListener('click', toggleSalaryVisibility);
   document.getElementById('closeSalaryModal').addEventListener('click', () => closeModal('salaryModal'));
@@ -530,7 +545,7 @@ function wireEvents() {
       else if (!document.getElementById('expenseModal').classList.contains('hidden')) saveExpense();
     }
     if (e.key === 'Escape') {
-      ['salaryModal','expenseModal','monthModal'].forEach(closeModal);
+      ['salaryModal','expenseModal','monthModal','settingsModal'].forEach(closeModal);
     }
   });
 }
