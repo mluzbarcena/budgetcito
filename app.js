@@ -125,7 +125,8 @@ function migrateMonthData(data) {
   if (!Array.isArray(data.fixed)) data.fixed = [];
   if (!Array.isArray(data.variable)) data.variable = [];
 
-  // Versión vieja tenía "extra": migrarlos a variables.
+  // El formato viejo tenía "extra" sin campo `active` (todos incluidos por defecto).
+  // Al migrar, se preserva active:true para no excluir gastos que el usuario ya había cargado.
   if (Array.isArray(data.extra) && data.extra.length) {
     data.extra.forEach(ex => {
       data.variable.push({
@@ -134,13 +135,15 @@ function migrateMonthData(data) {
         icon: ex.icon || '📝',
         color: ex.color || '#f87171',
         amount: ex.amount || 0,
-        active: true,
+        active: ex.active ?? true,
       });
     });
   }
   delete data.extra;
 
+  // Fallbacks para registros sin campo `active` guardados antes de esta versión.
   data.fixed.forEach(e => { if (e.active === undefined) e.active = true; });
+  // Variables sin `active`: se excluyen por defecto — en meses nuevos arrancan vacíos.
   data.variable.forEach(e => { if (e.active === undefined) e.active = false; });
 
   return data;
