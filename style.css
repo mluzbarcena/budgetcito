@@ -290,6 +290,9 @@ canvas { display: block; width: 100% !important; height: 220px !important; }
 .danger-btn:hover { background: rgba(248,113,113,0.25); }
 .modal-actions { display: flex; gap: 0.5rem; }
 .modal-actions .primary-btn { margin-top: 0.5rem; }
+.danger-btn.delete-confirm {
+  background: var(--danger); color: #fff; border-color: var(--danger);
+}
 
 /* Toggle switch */
 .toggle-row {

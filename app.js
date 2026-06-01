@@ -384,10 +384,21 @@ function toggleSalaryVisibility() {
 
 let _editingExpense = null;   // null => crear nuevo
 let _editingType = null;      // 'fixed' | 'variable'
+let _deleteConfirm = false;
+let _deleteConfirmTimer = null;
+
+function resetDeleteBtn() {
+  clearTimeout(_deleteConfirmTimer);
+  _deleteConfirm = false;
+  const btn = document.getElementById('deleteExpenseBtn');
+  btn.textContent = 'Eliminar';
+  btn.classList.remove('delete-confirm');
+}
 
 function openExpenseModal(item, type) {
   _editingExpense = item;
   _editingType = type;
+  resetDeleteBtn();
 
   document.getElementById('expenseModalTitle').textContent = item.name;
   document.getElementById('expenseNameInput').classList.add('hidden');
@@ -547,9 +558,22 @@ function wireEvents() {
   document.getElementById('closeSalaryModal').addEventListener('click', () => closeModal('salaryModal'));
   document.getElementById('saveSalaryBtn').addEventListener('click', saveSalary);
 
-  document.getElementById('closeExpenseModal').addEventListener('click', () => closeModal('expenseModal'));
+  document.getElementById('closeExpenseModal').addEventListener('click', () => {
+    resetDeleteBtn();
+    closeModal('expenseModal');
+  });
   document.getElementById('saveExpenseBtn').addEventListener('click', saveExpense);
-  document.getElementById('deleteExpenseBtn').addEventListener('click', deleteExpense);
+  document.getElementById('deleteExpenseBtn').addEventListener('click', () => {
+    if (!_deleteConfirm) {
+      _deleteConfirm = true;
+      const btn = document.getElementById('deleteExpenseBtn');
+      btn.textContent = '¿Confirmar?';
+      btn.classList.add('delete-confirm');
+      _deleteConfirmTimer = setTimeout(resetDeleteBtn, 3000);
+    } else {
+      deleteExpense();
+    }
+  });
 
   document.getElementById('addFixedBtn').addEventListener('click', () => openAddExpenseModal('fixed'));
   document.getElementById('addVariableBtn').addEventListener('click', () => openAddExpenseModal('variable'));
