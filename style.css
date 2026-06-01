@@ -315,7 +315,15 @@ canvas { display: block; width: 100% !important; height: 220px !important; }
 input:checked + .slider { background: var(--accent); }
 input:checked + .slider::before { transform: translateX(20px); background: #fff; }
 
-/* Month grid in picker */
+/* Month picker */
+.year-nav {
+  display: flex; align-items: center; justify-content: center;
+  gap: 1rem; margin-bottom: 1rem;
+}
+.year-display {
+  font-family: var(--mono); font-size: 1.1rem; font-weight: 500;
+  min-width: 4ch; text-align: center;
+}
 .month-grid {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
 }

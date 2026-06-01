@@ -469,30 +469,29 @@ function deleteExpense() {
 
 // ── Month Picker ──────────────────────────────────────────────────────────────
 
-function openMonthModal() {
-  document.getElementById('yearInput').value = State.currentYear;
+let _pickerYear = new Date().getFullYear();
+
+function renderMonthGrid() {
+  document.getElementById('yearDisplay').textContent = _pickerYear;
   const grid = document.getElementById('monthGrid');
   grid.innerHTML = '';
   MONTH_NAMES.forEach((name, idx) => {
     const btn = document.createElement('button');
-    btn.className = 'month-btn' + (idx === State.currentMonth ? ' active' : '');
+    const isCurrent = idx === State.currentMonth && _pickerYear === State.currentYear;
+    btn.className = 'month-btn' + (isCurrent ? ' active' : '');
     btn.textContent = name.slice(0, 3);
-    btn.dataset.month = idx;
     btn.addEventListener('click', () => {
-      grid.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      navigateToMonth(_pickerYear, idx);
+      closeModal('monthModal');
     });
     grid.appendChild(btn);
   });
-  showModal('monthModal');
 }
 
-function goToSelectedMonth() {
-  const year = parseInt(document.getElementById('yearInput').value) || State.currentYear;
-  const activeBtn = document.querySelector('#monthGrid .month-btn.active');
-  const month = activeBtn ? parseInt(activeBtn.dataset.month) : State.currentMonth;
-  navigateToMonth(year, month);
-  closeModal('monthModal');
+function openMonthModal() {
+  _pickerYear = State.currentYear;
+  renderMonthGrid();
+  showModal('monthModal');
 }
 
 // ── Navigation ────────────────────────────────────────────────────────────────
@@ -580,7 +579,8 @@ function wireEvents() {
 
   document.getElementById('monthDisplay').addEventListener('click', openMonthModal);
   document.getElementById('closeMonthModal').addEventListener('click', () => closeModal('monthModal'));
-  document.getElementById('goToMonthBtn').addEventListener('click', goToSelectedMonth);
+  document.getElementById('prevYearBtn').addEventListener('click', () => { _pickerYear--; renderMonthGrid(); });
+  document.getElementById('nextYearBtn').addEventListener('click', () => { _pickerYear++; renderMonthGrid(); });
 
   document.getElementById('prevMonth').addEventListener('click', prevMonth);
   document.getElementById('nextMonth').addEventListener('click', nextMonth);
