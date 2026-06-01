@@ -611,11 +611,29 @@ function wireEvents() {
   });
 }
 
+// ── Swipe Navigation ─────────────────────────────────────────────────────────
+
+function wireSwipe() {
+  let startX = 0, startY = 0;
+  document.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (document.querySelector('.modal-overlay:not(.hidden)')) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.8) return;
+    dx < 0 ? nextMonth() : prevMonth();
+  }, { passive: true });
+}
+
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
 
 function init() {
   State.settings = Repository.getSettings();
   wireEvents();
+  wireSwipe();
   State.monthData = getOrCreateMonthData(State.monthKey);
   renderAll();
 
