@@ -213,6 +213,37 @@ function buildChartData(data) {
   };
 }
 
+function buildChartConfig(type, labels, amounts, colors) {
+  if (type === 'donut') {
+    return {
+      type: 'doughnut',
+      data: { labels, datasets: [{ data: amounts, backgroundColor: colors, borderWidth: 2, borderColor: '#1a1a2e', hoverOffset: 6 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '65%',
+        plugins: {
+          legend: { position: 'right', labels: { color: '#9999bb', font: { family: 'DM Sans', size: 11 }, boxWidth: 12, padding: 10 } },
+          tooltip: { callbacks: { label: ctx => ' ' + formatARS(ctx.parsed) } },
+        },
+      },
+    };
+  }
+  return {
+    type: 'bar',
+    data: { labels, datasets: [{ data: amounts, backgroundColor: colors, borderRadius: 6, borderSkipped: false }] },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' ' + formatARS(ctx.parsed.x) } },
+      },
+      scales: {
+        x: { ticks: { color: '#9999bb', font: { family: 'DM Mono', size: 10 }, callback: v => fmtCompact.format(v) }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: { ticks: { color: '#9999bb', font: { family: 'DM Sans', size: 10 } }, grid: { display: false } },
+      },
+    },
+  };
+}
+
 function renderChart() {
   const { labels, amounts, colors } = buildChartData(State.monthData);
   const canvas = document.getElementById('expenseChart');
@@ -228,37 +259,19 @@ function renderChart() {
   canvas.classList.remove('hidden');
   empty.classList.add('hidden');
 
-  const isDonut = State.chartType === 'donut';
-  const config = isDonut
-    ? {
-        type: 'doughnut',
-        data: { labels, datasets: [{ data: amounts, backgroundColor: colors, borderWidth: 2, borderColor: '#1a1a2e', hoverOffset: 6 }] },
-        options: {
-          responsive: true, maintainAspectRatio: false, cutout: '65%',
-          plugins: {
-            legend: { position: 'right', labels: { color: '#9999bb', font: { family: 'DM Sans', size: 11 }, boxWidth: 12, padding: 10 } },
-            tooltip: { callbacks: { label: ctx => ' ' + formatARS(ctx.parsed) } },
-          },
-        },
-      }
-    : {
-        type: 'bar',
-        data: { labels, datasets: [{ data: amounts, backgroundColor: colors, borderRadius: 6, borderSkipped: false }] },
-        options: {
-          responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-          plugins: {
-            legend: { display: false },
-            tooltip: { callbacks: { label: ctx => ' ' + formatARS(ctx.parsed.x) } },
-          },
-          scales: {
-            x: { ticks: { color: '#9999bb', font: { family: 'DM Mono', size: 10 }, callback: v => fmtCompact.format(v) }, grid: { color: 'rgba(255,255,255,0.05)' } },
-            y: { ticks: { color: '#9999bb', font: { family: 'DM Sans', size: 10 } }, grid: { display: false } },
-          },
-        },
-      };
+  const neededType = State.chartType === 'donut' ? 'doughnut' : 'bar';
+
+  // Reuse existing chart instance when type matches to avoid flicker on data updates.
+  if (State.chart && State.chart.config.type === neededType) {
+    State.chart.data.labels = labels;
+    State.chart.data.datasets[0].data = amounts;
+    State.chart.data.datasets[0].backgroundColor = colors;
+    State.chart.update('none');
+    return;
+  }
 
   if (State.chart) State.chart.destroy();
-  State.chart = new Chart(canvas, config);
+  State.chart = new Chart(canvas, buildChartConfig(State.chartType, labels, amounts, colors));
 }
 
 // ── UI Rendering ──────────────────────────────────────────────────────────────
