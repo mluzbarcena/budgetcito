@@ -268,7 +268,10 @@ function renderAll() {
 
   renderSalary(data.salary || 0);
   document.getElementById('summaryExpenses').textContent = formatARS(totals.totalExpenses);
-  document.getElementById('summaryAvailable').textContent = formatARS(totals.available);
+
+  const availableEl = document.getElementById('summaryAvailable');
+  availableEl.textContent = formatARS(totals.available);
+  availableEl.className = 'card-amount ' + (totals.available < 0 ? 'danger' : 'success');
   document.getElementById('summarySavings').textContent = totals.savingsPercent;
   document.getElementById('summarySpent').textContent = totals.spentPercent;
 
