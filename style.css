@@ -89,6 +89,10 @@ html, body {
 }
 .salary-card .card-label { flex: none; }
 .salary-card .card-amount { flex: 1; font-size: 1.75rem; }
+.salary-hint {
+  width: 100%; font-size: 0.75rem; color: var(--accent2);
+  margin-top: 0.15rem; font-style: italic;
+}
 .edit-salary-btn {
   background: rgba(124,106,247,0.15); border: 1px solid rgba(124,106,247,0.3);
   color: var(--accent2); font-family: var(--font); font-size: 0.75rem;

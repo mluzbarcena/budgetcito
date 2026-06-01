@@ -303,6 +303,7 @@ function renderAll() {
 function renderSalary(amount) {
   const el = document.getElementById('summaryIncome');
   const btn = document.getElementById('toggleSalaryBtn');
+  const hint = document.getElementById('salaryHint');
   if (State.settings.salaryHidden) {
     el.textContent = '• • • • •';
     btn.textContent = '🙈';
@@ -312,6 +313,7 @@ function renderSalary(amount) {
     btn.textContent = '👁';
     btn.classList.remove('muted');
   }
+  if (hint) hint.classList.toggle('hidden', amount > 0 || State.settings.salaryHidden);
 }
 
 /** Render para fijos y variables (mismo comportamiento: editar / incluir / eliminar). */
