@@ -58,8 +58,12 @@ Settings globales: clave `mg_settings` → `{ "salaryHidden": false }`
 - **No introducir dependencias nuevas** — si necesitás algo, implementalo vanilla
 - **No agregar TypeScript ni bundler** — el código se despliega tal cual
 - **No hay test suite** — verificar manualmente en el browser
-- **Nombres en español** para UI (labels, textos), inglés para código (variables, funciones)
+- **Todo en inglés**: el código (variables, funciones, comentarios), los mensajes de commit y las descripciones de PR deben estar en inglés. La UI hoy está en español (labels, textos) — ver nota de traducción pendiente abajo.
 - **`renderAll()` es el punto de verdad**: después de cualquier mutación de `State.monthData`, llamar `persistAndRender()` que guarda + re-renderiza
+
+## Traducción pendiente
+
+- La UI todavía tiene textos en español (labels, títulos de modales, toasts, empty states, etc.). Hay que migrarla a inglés en un PR dedicado de traducción. Hasta entonces, el código/commits/PRs nuevos van en inglés aunque convivan con strings de UI en español.
 
 ## Bugs conocidos (pendientes de fix)
 
