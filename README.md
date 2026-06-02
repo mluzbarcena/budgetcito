@@ -1,4 +1,4 @@
-# Budgetcito — Mis Gastos
+# Budgetcito
 
 A PWA for personal monthly expense tracking. Works 100% offline, no account, no backend. Your data lives on your device.
 
