@@ -4,11 +4,12 @@ PWA de control de gastos mensuales personales. Funciona 100% offline, sin cuenta
 
 ## Features
 
-- **Sueldo neto por mes** — configurable mes a mes, con opción de ocultar el monto
+- **Sueldo neto por mes** — configurable mes a mes, con opción de ocultar el monto. Es el ingreso principal y siempre se muestra destacado
+- **Ingresos variables** — entradas eventuales que no pasan todos los meses (freelance, aguinaldo, ventas, regalos). Suman al disponible como el sueldo pero se diferencian visualmente; se cargan de cero cada mes
 - **Gastos fijos** — se arrastran automáticamente al siguiente mes con su monto (ej: alquiler, servicios)
 - **Gastos variables** — se cargan de cero cada mes (ej: nafta, entretenimiento)
-- **Íconos y colores personalizables** — picker de emoji y paleta de colores en cada gasto
-- **Resumen visual** — sueldo, total gastado, disponible, % ahorro y % gastado (valores reales, sin clamping)
+- **Íconos y colores personalizables** — picker de emoji y paleta de colores en cada gasto o ingreso
+- **Resumen visual** — sueldo (+ otros ingresos), total gastado, disponible, % ahorro y % gastado calculados sobre el total de ingresos (valores reales, sin clamping)
 - **Gráficos** — distribución en torta o barras (Chart.js)
 - **Navegación por mes** — picker con navegación de año, botones prev/next y swipe horizontal en mobile
 - **Toggle "incluir este mes"** — marcá un gasto como omitido sin eliminarlo
@@ -58,7 +59,8 @@ El archivo exportado tiene esta estructura:
       "monthKey": "2025-06",
       "salary": 1200000,
       "fixed": [...],
-      "variable": [...]
+      "variable": [...],
+      "income": [...]
     }
   }
 }
