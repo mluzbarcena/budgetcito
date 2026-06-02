@@ -1,53 +1,53 @@
-# Budgetcito — Mis Gastos
+# Budgetcito
 
-PWA de control de gastos mensuales personales. Funciona 100% offline, sin cuenta, sin backend. Los datos viven en tu dispositivo.
+A PWA for personal monthly expense tracking. Works 100% offline, no account, no backend. Your data lives on your device.
 
 ## Features
 
-- **Sueldo neto por mes** — configurable mes a mes, con opción de ocultar el monto. Es el ingreso principal y siempre se muestra destacado
-- **Ingresos variables** — entradas eventuales que no pasan todos los meses (freelance, aguinaldo, ventas, regalos). Suman al disponible como el sueldo pero se diferencian visualmente; se cargan de cero cada mes
-- **Gastos fijos** — se arrastran automáticamente al siguiente mes con su monto (ej: alquiler, servicios)
-- **Gastos variables** — se cargan de cero cada mes (ej: nafta, entretenimiento)
-- **Íconos y colores personalizables** — picker de emoji y paleta de colores en cada gasto o ingreso
-- **Resumen visual** — sueldo (+ otros ingresos), total gastado, disponible, % ahorro y % gastado calculados sobre el total de ingresos (valores reales, sin clamping)
-- **Gráficos** — distribución en torta o barras (Chart.js)
-- **Navegación por mes** — picker con navegación de año, botones prev/next y swipe horizontal en mobile
-- **Toggle "incluir este mes"** — marcá un gasto como omitido sin eliminarlo
-- **Backup y restore** — exportá e importá todos los datos como JSON desde Configuración
-- **Modo PWA** — instalable en home screen, funciona offline (Service Worker)
+- **Net salary per month** — configurable month by month, with an option to hide the amount. It's the primary income and is always shown prominently
+- **Variable income** — occasional inflows that don't happen every month (freelance, year-end bonus, sales, gifts). They add to the available balance like the salary does but are visually distinct; they start empty each month
+- **Fixed expenses** — carried forward automatically to the next month with their amount (e.g. rent, utilities)
+- **Variable expenses** — start from zero each month (e.g. fuel, entertainment)
+- **Customizable icons and colors** — emoji picker and color palette on each expense or income
+- **Visual summary** — salary (+ other income), total spent, available, % saved and % spent computed over total income (real values, no clamping)
+- **Charts** — distribution as a pie or bar chart (Chart.js)
+- **Month navigation** — picker with year navigation, prev/next buttons and horizontal swipe on mobile
+- **"Include this month" toggle** — mark an expense as skipped without deleting it
+- **Backup and restore** — export and import all your data as JSON from Settings
+- **PWA mode** — installable to the home screen, works offline (Service Worker)
 
-## Uso local
+## Local usage
 
-Requiere servidor HTTP (el Service Worker no funciona con `file://`):
+Requires an HTTP server (the Service Worker does not work with `file://`):
 
 ```bash
 python -m http.server 8080
-# luego abrí http://localhost:8080
+# then open http://localhost:8080
 ```
 
-## Stack técnico
+## Tech stack
 
-| Capa | Tecnología |
-|------|-----------|
+| Layer | Technology |
+|-------|-----------|
 | UI | HTML5 + CSS3 (custom properties, grid, flexbox) |
-| Lógica | JavaScript vanilla (ES2020) |
-| Gráficos | Chart.js 4.4 (CDN) |
-| Fuentes | DM Sans + DM Mono (Google Fonts) |
-| Persistencia | `localStorage` |
-| Backup | Export/Import JSON (en Configuración ⚙) |
+| Logic | Vanilla JavaScript (ES2020) |
+| Charts | Chart.js 4.4 (CDN) |
+| Fonts | DM Sans + DM Mono (Google Fonts) |
+| Persistence | `localStorage` |
+| Backup | JSON export/import (in Settings ⚙) |
 | Offline | Service Worker (Cache-First) |
-| Instalación | Web App Manifest (PWA) |
+| Installation | Web App Manifest (PWA) |
 
-No hay framework, bundler, ni dependencias de npm.
+No framework, no bundler, no npm dependencies.
 
 ## Export / Import
 
-En el modal de **Configuración ⚙** hay dos acciones:
+The **Settings ⚙** modal has two actions:
 
-- **↓ Exportar JSON** — descarga un archivo `misGastos-YYYY-MM-DD.json` con todos los meses y settings
-- **↑ Importar JSON** — carga un archivo exportado previamente; reemplaza todos los datos actuales
+- **↓ Export JSON** — downloads a `misGastos-YYYY-MM-DD.json` file with all months and settings
+- **↑ Import JSON** — loads a previously exported file; replaces all current data
 
-El archivo exportado tiene esta estructura:
+The exported file has this structure:
 
 ```json
 {
@@ -66,4 +66,4 @@ El archivo exportado tiene esta estructura:
 }
 ```
 
-Casos de uso: cambiar de dispositivo, hacer backup antes de borrar el browser, compartir datos entre el celular y la PC.
+Use cases: switching devices, backing up before clearing the browser, sharing data between your phone and PC.
