@@ -65,19 +65,12 @@ Settings globales: clave `mg_settings` → `{ "salaryHidden": false }`
 
 - La UI todavía tiene textos en español (labels, títulos de modales, toasts, empty states, etc.). Hay que migrarla a inglés en un PR dedicado de traducción. Hasta entonces, el código/commits/PRs nuevos van en inglés aunque convivan con strings de UI en español.
 
-## Bugs conocidos (pendientes de fix)
+## Notas / mejoras pendientes
 
-| # | Archivo | Descripción |
-|---|---------|-------------|
-| 1 | `style.css:16` | `--text3: #5555770` — hex de 7 dígitos, inválido (debe ser `#555577`) |
-| 2 | `app.js:120-143` | `migrateMonthData()` muta los datos pero nunca los persiste → se re-migra en cada carga |
-| 3 | `app.js:268` | Balance negativo (`available < 0`) se muestra con clase CSS `success` (verde) |
-| 4 | `app.js:486` | Botón `#openSettings` no tiene event listener — no hace nada |
-| 5 | `app.js:127-140` | Gastos migrados de `extra` reciben `active: true`, pero la regla general de variables asigna `active: false` |
-| 6 | `app.js:253` | Chart.js se destruye y recrea en cada render → parpadeo visible |
+- `migrateMonthData()` migra gastos de `extra` con `active: ex.active ?? true` (preserva lo que el usuario ya había cargado), mientras que las variables sin `active` se asignan `active: false`. La diferencia es intencional y está documentada en los comentarios — no tocar sin entender el motivo.
 
 ## Notas de PWA
 
 - El SW usa `Cache-First` para todos los assets → después del primer load funciona offline
-- `CACHE_NAME = 'mis-gastos-v1'`: al cambiar assets, incrementar la versión manualmente
+- `CACHE_NAME = 'budgetcito-v2'`: al cambiar assets, incrementar la versión manualmente
 - `manifest.json`: los iconos usan `"purpose": "any maskable"` combinado — lo correcto es tener entradas separadas para `any` y `maskable`
