@@ -1,4 +1,4 @@
-# CLAUDE.md — Budgetcito / Mis Gastos
+# CLAUDE.md — Budgetcito
 
 Guía para trabajar en este proyecto con Claude Code.
 
