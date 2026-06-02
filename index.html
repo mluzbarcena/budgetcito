@@ -35,6 +35,7 @@
       <div class="summary-card salary-card">
         <span class="card-label">Sueldo neto</span>
         <span class="card-amount" id="summaryIncome">$0</span>
+        <span class="salary-extra hidden" id="salaryExtra"></span>
         <button class="icon-btn-sm" id="toggleSalaryBtn" title="Mostrar/ocultar sueldo" aria-label="Mostrar u ocultar sueldo">👁</button>
         <button class="edit-salary-btn" id="editSalaryBtn">editar</button>
         <p class="salary-hint hidden" id="salaryHint">Tocá "editar" para configurar tu sueldo</p>
@@ -72,6 +73,16 @@
         <canvas id="expenseChart"></canvas>
         <div id="chartEmpty" class="chart-empty hidden">Cargá gastos para ver el gráfico</div>
       </div>
+    </section>
+
+    <!-- Variable Income List -->
+    <section class="income-section">
+      <div class="section-header">
+        <span class="section-title">Ingresos variables</span>
+        <span class="section-badge" id="incomeTotal">$0</span>
+      </div>
+      <ul class="expense-list income-list" id="incomeList"></ul>
+      <button class="add-extra-btn" id="addIncomeBtn">+ Agregar ingreso variable</button>
     </section>
 
     <!-- Expenses List -->

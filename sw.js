@@ -3,7 +3,7 @@
  * Estrategia: Cache-First para assets, Network-First para nunca (todo es local)
  */
 
-const CACHE_NAME = 'budgetcito-v1';
+const CACHE_NAME = 'budgetcito-v2';
 const ASSETS = [
   './',
   './index.html',

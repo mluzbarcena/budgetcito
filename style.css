@@ -94,6 +94,10 @@ html, body {
   width: 100%; font-size: 0.75rem; color: var(--accent2);
   margin-top: 0.15rem; font-style: italic;
 }
+.salary-extra {
+  width: 100%; font-family: var(--mono); font-size: 0.8rem;
+  color: var(--success); margin-top: -0.1rem; letter-spacing: -0.01em;
+}
 .edit-salary-btn {
   background: rgba(124,106,247,0.15); border: 1px solid rgba(124,106,247,0.3);
   color: var(--accent2); font-family: var(--font); font-size: 0.75rem;
@@ -164,10 +168,14 @@ canvas { display: block; width: 100% !important; height: 220px !important; }
 }
 
 /* ── Expense List ──────────────────────────────────────── */
-.expenses-section {
+.expenses-section,
+.income-section {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 1.25rem;
 }
+.income-section { margin-bottom: 1.5rem; }
+.income-list .exp-amount { color: var(--success); }
+.income-list .expense-item.inactive .exp-amount { color: var(--text2); }
 .expense-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
 .expense-item {
   display: flex; align-items: center; gap: 0.75rem;
