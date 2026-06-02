@@ -40,7 +40,8 @@ const VARIABLE_EXPENSES_DEFAULTS = [
 
 const VARIABLE_COLORS = ['#f87171','#fb923c','#fbbf24','#34d399','#60a5fa','#a78bfa','#f472b6','#c084fc'];
 const FIXED_COLORS = ['#7c6af7','#34d399','#60a5fa','#fbbf24','#f472b6','#a78bfa','#c084fc','#fb923c'];
-const ALL_COLORS = [...new Set([...FIXED_COLORS, ...VARIABLE_COLORS])];
+const INCOME_COLORS = ['#34d399','#10b981','#22d3ee','#60a5fa','#a3e635','#facc15','#2dd4bf','#4ade80'];
+const ALL_COLORS = [...new Set([...FIXED_COLORS, ...VARIABLE_COLORS, ...INCOME_COLORS])];
 
 const STORAGE_PREFIX = 'mg_';
 const SETTINGS_KEY = STORAGE_PREFIX + 'settings';
@@ -93,19 +94,21 @@ const Repository = {
  */
 function createMonthData(monthKey, prevMonthKey) {
   const prev = prevMonthKey ? Repository.getMonth(prevMonthKey) : null;
-  let fixed, variable, salary;
+  let fixed, variable, income, salary;
 
   if (prev) {
     fixed = (prev.fixed || []).map(e => ({ ...e }));   // se copian
     variable = [];                                      // arrancan de cero
+    income = [];                                        // ingresos variables: vacíos cada mes
     salary = prev.salary ?? 0;
   } else {
     fixed = FIXED_EXPENSES_DEFAULTS.map(def => ({ ...def, amount: 0, active: true }));
     variable = [];
+    income = [];
     salary = 0;
   }
 
-  return { monthKey, salary, fixed, variable };
+  return { monthKey, salary, fixed, variable, income };
 }
 
 function getOrCreateMonthData(monthKey) {
@@ -125,6 +128,7 @@ function getOrCreateMonthData(monthKey) {
 function migrateMonthData(data) {
   if (!Array.isArray(data.fixed)) data.fixed = [];
   if (!Array.isArray(data.variable)) data.variable = [];
+  if (!Array.isArray(data.income)) data.income = [];
 
   // El formato viejo tenía "extra" sin campo `active` (todos incluidos por defecto).
   // Al migrar, se preserva active:true para no excluir gastos que el usuario ya había cargado.
@@ -194,11 +198,13 @@ function computeTotals(data) {
   const fixedTotal = sumActive(data.fixed);
   const variableTotal = sumActive(data.variable);
   const totalExpenses = fixedTotal + variableTotal;
-  const available = (data.salary || 0) - totalExpenses;
   const salary = data.salary || 0;
-  const savingsPercent = salary ? Math.round((available / salary) * 100) + '%' : '—';
-  const spentPercent = salary ? Math.round((totalExpenses / salary) * 100) + '%' : '—';
-  return { fixedTotal, variableTotal, totalExpenses, available, savingsPercent, spentPercent };
+  const incomeExtra = sumActive(data.income || []);
+  const totalIncome = salary + incomeExtra;
+  const available = totalIncome - totalExpenses;
+  const savingsPercent = totalIncome ? Math.round((available / totalIncome) * 100) + '%' : '—';
+  const spentPercent = totalIncome ? Math.round((totalExpenses / totalIncome) * 100) + '%' : '—';
+  return { fixedTotal, variableTotal, totalExpenses, incomeExtra, totalIncome, available, savingsPercent, spentPercent };
 }
 
 // ── Chart ─────────────────────────────────────────────────────────────────────
@@ -284,7 +290,7 @@ function renderAll() {
 
   document.getElementById('monthLabel').textContent = State.monthLabel;
 
-  renderSalary(data.salary || 0);
+  renderSalary(data.salary || 0, totals.incomeExtra);
   document.getElementById('summaryExpenses').textContent = formatARS(totals.totalExpenses);
 
   const availableEl = document.getElementById('summaryAvailable');
@@ -297,17 +303,20 @@ function renderAll() {
 
   document.getElementById('fixedTotal').textContent = formatARS(totals.fixedTotal);
   document.getElementById('variableTotal').textContent = formatARS(totals.variableTotal);
+  document.getElementById('incomeTotal').textContent = formatARS(totals.incomeExtra);
 
   renderExpenseList('fixedList', data.fixed, 'fixed');
   renderExpenseList('variableList', data.variable, 'variable');
+  renderExpenseList('incomeList', data.income, 'income');
 
   renderChart();
 }
 
-function renderSalary(amount) {
+function renderSalary(amount, incomeExtra = 0) {
   const el = document.getElementById('summaryIncome');
   const btn = document.getElementById('toggleSalaryBtn');
   const hint = document.getElementById('salaryHint');
+  const extra = document.getElementById('salaryExtra');
   if (State.settings.salaryHidden) {
     el.textContent = '• • • • •';
     btn.textContent = '🙈';
@@ -318,6 +327,11 @@ function renderSalary(amount) {
     btn.classList.remove('muted');
   }
   if (hint) hint.classList.toggle('hidden', amount > 0 || State.settings.salaryHidden);
+  if (extra) {
+    const show = incomeExtra > 0 && !State.settings.salaryHidden;
+    extra.classList.toggle('hidden', !show);
+    if (show) extra.textContent = '+ ' + formatARS(incomeExtra) + ' otros ingresos';
+  }
 }
 
 /** Render para fijos y variables (mismo comportamiento: editar / incluir / eliminar). */
@@ -326,7 +340,8 @@ function renderExpenseList(listId, items, type) {
   ul.innerHTML = '';
 
   if (items.length === 0) {
-    ul.innerHTML = '<li class="empty-state">Sin gastos cargados</li>';
+    const emptyText = type === 'income' ? 'Sin ingresos cargados' : 'Sin gastos cargados';
+    ul.innerHTML = '<li class="empty-state">' + emptyText + '</li>';
     return;
   }
 
@@ -490,13 +505,21 @@ function openExpenseModal(item, type) {
   showModal('expenseModal');
 }
 
+/** Lista del monthData según el tipo: 'fixed' | 'variable' | 'income'. */
+function listForType(type) {
+  return State.monthData[type];
+}
+
+const TYPE_TITLES = { fixed: 'Nuevo gasto fijo', variable: 'Nuevo gasto variable', income: 'Nuevo ingreso variable' };
+const TYPE_ICONS = { fixed: '📌', variable: '📝', income: '💰' };
+const TYPE_PALETTES = { fixed: FIXED_COLORS, variable: VARIABLE_COLORS, income: INCOME_COLORS };
+
 function openAddExpenseModal(type) {
   _editingExpense = null;
   _editingType = type;
   resetDeleteBtn();
 
-  document.getElementById('expenseModalTitle').textContent =
-    type === 'fixed' ? 'Nuevo gasto fijo' : 'Nuevo gasto variable';
+  document.getElementById('expenseModalTitle').textContent = TYPE_TITLES[type] || 'Nuevo';
 
   document.getElementById('expenseNameInput').classList.remove('hidden');
   document.getElementById('expenseNameInput').value = '';
@@ -507,9 +530,9 @@ function openAddExpenseModal(type) {
 
   document.getElementById('deleteExpenseBtn').classList.add('hidden');
 
-  const palette = type === 'fixed' ? FIXED_COLORS : VARIABLE_COLORS;
-  const list = type === 'fixed' ? State.monthData.fixed : State.monthData.variable;
-  document.getElementById('expenseIconInput').value = type === 'fixed' ? '📌' : '📝';
+  const palette = TYPE_PALETTES[type] || VARIABLE_COLORS;
+  const list = listForType(type);
+  document.getElementById('expenseIconInput').value = TYPE_ICONS[type] || '📝';
   renderColorSwatches(palette[list.length % palette.length]);
 
   showModal('expenseModal');
@@ -519,7 +542,7 @@ function saveExpense() {
   const amount = parseFloat(document.getElementById('expenseAmountInput').value) || 0;
   const active = document.getElementById('expenseActiveToggle').checked;
   const icon = document.getElementById('expenseIconInput').value.trim() ||
-    (_editingType === 'fixed' ? '📌' : '📝');
+    (TYPE_ICONS[_editingType] || '📝');
   const color = document.getElementById('colorSwatches').dataset.selected || ALL_COLORS[0];
 
   if (_editingExpense) {
@@ -530,7 +553,7 @@ function saveExpense() {
   } else {
     const name = document.getElementById('expenseNameInput').value.trim();
     if (!name) return;
-    const list = _editingType === 'fixed' ? State.monthData.fixed : State.monthData.variable;
+    const list = listForType(_editingType);
     list.push({
       id: _editingType + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
       name, icon, color, amount, active,
@@ -544,7 +567,7 @@ function saveExpense() {
 
 function deleteExpense() {
   if (!_editingExpense) return;
-  const key = _editingType === 'fixed' ? 'fixed' : 'variable';
+  const key = _editingType;
   State.monthData[key] = State.monthData[key].filter(e => e.id !== _editingExpense.id);
   persistAndRender();
   closeModal('expenseModal');
@@ -665,6 +688,7 @@ function wireEvents() {
 
   document.getElementById('addFixedBtn').addEventListener('click', () => openAddExpenseModal('fixed'));
   document.getElementById('addVariableBtn').addEventListener('click', () => openAddExpenseModal('variable'));
+  document.getElementById('addIncomeBtn').addEventListener('click', () => openAddExpenseModal('income'));
 
   document.getElementById('monthDisplay').addEventListener('click', openMonthModal);
   document.getElementById('closeMonthModal').addEventListener('click', () => closeModal('monthModal'));
