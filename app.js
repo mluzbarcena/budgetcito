@@ -340,7 +340,8 @@ function renderExpenseList(listId, items, type) {
   ul.innerHTML = '';
 
   if (items.length === 0) {
-    ul.innerHTML = '<li class="empty-state">Sin gastos cargados</li>';
+    const emptyText = type === 'income' ? 'Sin ingresos cargados' : 'Sin gastos cargados';
+    ul.innerHTML = '<li class="empty-state">' + emptyText + '</li>';
     return;
   }
 
